@@ -48,11 +48,24 @@ void UDynamicPropertiesContainer::BindPropertyValueChanged(FGameplayTag Property
 		return;
 	}
 
-	// Create a lambda that captures the PropertyTag and broadcasts the container's event
-	Property->ValueChanged.AddLambda([this, PropertyTag](float OldValue, float NewValue)
+	// Create a binder object that will forward the event with the property tag
+	UPropertyValueChangedBinder* Binder = NewObject<UPropertyValueChangedBinder>(this);
+	if (Binder)
 	{
-		OnPropertyValueChanged.Broadcast(PropertyTag, OldValue, NewValue);
-	});
+		// Bind the binder to the property
+		Binder->BindToProperty(Property, PropertyTag);
+		
+		// Store the binder to prevent garbage collection
+		ValueChangedBinders.Add(Binder);
+
+		// Bind our handler to the binder's event
+		Binder->OnBinderValueChanged.AddDynamic(this, &UDynamicPropertiesContainer::HandleBinderValueChanged);
+	}
+}
+
+void UDynamicPropertiesContainer::HandleBinderValueChanged(FGameplayTag PropertyTag, float OldValue, float NewValue)
+{
+	OnPropertyValueChanged.Broadcast(PropertyTag, OldValue, NewValue);
 }
 
 float UDynamicPropertiesContainer::GetPropertyValueOrDefault(FGameplayTag PropertyTag, float DefaultValue)

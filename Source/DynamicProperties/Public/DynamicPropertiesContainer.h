@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
 #include "DynamicProperty.h"
+#include "PropertyValueChangedBinder.h"
 #include "DynamicPropertiesContainer.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNewPropertyAdded, FGameplayTag, PropertyTag, UDynamicProperty*, Property);
@@ -26,6 +27,10 @@ protected:
 	/** Map of dynamic properties indexed by gameplay tags */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dynamic Properties")
 	TMap<FGameplayTag, UDynamicProperty*> DynamicProperties;
+
+	/** Helper objects for binding property value changed events */
+	UPROPERTY()
+	TArray<UPropertyValueChangedBinder*> ValueChangedBinders;
 
 public:
 
@@ -73,5 +78,14 @@ private:
 	 * @param Property The property to bind to
 	 */
 	void BindPropertyValueChanged(FGameplayTag PropertyTag, UDynamicProperty* Property);
+
+	/**
+	 * Handler called when a binder's value changes
+	 * @param PropertyTag The tag of the property that changed
+	 * @param OldValue The previous value
+	 * @param NewValue The new value
+	 */
+	UFUNCTION()
+	void HandleBinderValueChanged(FGameplayTag PropertyTag, float OldValue, float NewValue);
 };
 

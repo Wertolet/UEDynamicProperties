@@ -18,7 +18,7 @@ public:
 	UModifierAddScaledBase();
 
 	/** The multiplier to scale the base value by before adding */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Modifier", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Modifier", meta = (ExposeOnSpawn = "true"))
 	float BaseMultiplier;
 
 	virtual float Apply_Implementation(float BaseValue, float CurrentValue) override;
