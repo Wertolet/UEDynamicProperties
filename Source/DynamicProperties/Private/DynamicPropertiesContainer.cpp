@@ -31,11 +31,28 @@ UDynamicProperty* UDynamicPropertiesContainer::GetOrAddProperty(FGameplayTag Pro
 		NewProperty->SetBaseValue(BaseValue);
 		DynamicProperties.Add(PropertyTag, NewProperty);
 		
-		// Fire event
-		NewPropertyAdded.Broadcast(PropertyTag, NewProperty);
+		// Bind to the property's ValueChanged event
+		BindPropertyValueChanged(PropertyTag, NewProperty);
+		
+		// Fire value changed event for the initial value (transition from non-existent to existent)
+		OnPropertyValueChanged.Broadcast(PropertyTag, BaseValue, BaseValue);
 	}
 
 	return NewProperty;
+}
+
+void UDynamicPropertiesContainer::BindPropertyValueChanged(FGameplayTag PropertyTag, UDynamicProperty* Property)
+{
+	if (!Property)
+	{
+		return;
+	}
+
+	// Create a lambda that captures the PropertyTag and broadcasts the container's event
+	Property->ValueChanged.AddLambda([this, PropertyTag](float OldValue, float NewValue)
+	{
+		OnPropertyValueChanged.Broadcast(PropertyTag, OldValue, NewValue);
+	});
 }
 
 float UDynamicPropertiesContainer::GetPropertyValueOrDefault(FGameplayTag PropertyTag, float DefaultValue)

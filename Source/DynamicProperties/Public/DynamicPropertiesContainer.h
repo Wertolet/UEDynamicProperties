@@ -9,6 +9,7 @@
 #include "DynamicPropertiesContainer.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNewPropertyAdded, FGameplayTag, PropertyTag, UDynamicProperty*, Property);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPropertyValueChanged, FGameplayTag, PropertyTag, float, OldValue, float, NewValue);
 
 /**
  * Actor component that manages a collection of dynamic properties identified by gameplay tags
@@ -27,9 +28,10 @@ protected:
 	TMap<FGameplayTag, UDynamicProperty*> DynamicProperties;
 
 public:
-	/** Event fired when a new property is added to the container */
+
+	/** Event fired when any property's value changes */
 	UPROPERTY(BlueprintAssignable, Category = "Dynamic Properties")
-	FOnNewPropertyAdded NewPropertyAdded;
+	FOnPropertyValueChanged OnPropertyValueChanged;
 
 	/**
 	 * Gets a property by its gameplay tag
@@ -63,5 +65,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Dynamic Properties")
 	void GetPropertiesKeys(TArray<FGameplayTag>& OutKeys);
+
+private:
+	/**
+	 * Binds the value changed handler for a specific property
+	 * @param PropertyTag The tag of the property to bind
+	 * @param Property The property to bind to
+	 */
+	void BindPropertyValueChanged(FGameplayTag PropertyTag, UDynamicProperty* Property);
 };
 
