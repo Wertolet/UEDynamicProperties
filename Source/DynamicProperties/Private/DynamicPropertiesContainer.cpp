@@ -34,8 +34,8 @@ UDynamicProperty* UDynamicPropertiesContainer::GetOrAddProperty(FGameplayTag Pro
 		// Bind to the property's ValueChanged event
 		BindPropertyValueChanged(PropertyTag, NewProperty);
 		
-		// Fire value changed event for the initial value (transition from non-existent to existent)
-		OnPropertyValueChanged.Broadcast(PropertyTag, BaseValue, BaseValue);
+		// Call virtual hook for derived classes (also fires initial OnPropertyValueChanged)
+		OnPropertyAddedInternal(PropertyTag, NewProperty);
 	}
 
 	return NewProperty;
@@ -65,6 +65,13 @@ void UDynamicPropertiesContainer::BindPropertyValueChanged(FGameplayTag Property
 
 void UDynamicPropertiesContainer::HandleBinderValueChanged(FGameplayTag PropertyTag, float OldValue, float NewValue)
 {
+	// Call virtual hook for derived classes (also broadcasts OnPropertyValueChanged)
+	OnPropertyValueChangedInternal(PropertyTag, OldValue, NewValue);
+}
+
+void UDynamicPropertiesContainer::OnPropertyValueChangedInternal(FGameplayTag PropertyTag, float OldValue, float NewValue)
+{
+	// Base implementation broadcasts the event
 	OnPropertyValueChanged.Broadcast(PropertyTag, OldValue, NewValue);
 }
 
@@ -83,5 +90,17 @@ float UDynamicPropertiesContainer::GetPropertyValueOrDefault(FGameplayTag Proper
 void UDynamicPropertiesContainer::GetPropertiesKeys(TArray<FGameplayTag>& OutKeys)
 {
 	DynamicProperties.GetKeys(OutKeys);
+}
+
+void UDynamicPropertiesContainer::OnPropertyAddedInternal(FGameplayTag PropertyTag, UDynamicProperty* Property)
+{
+	if (!Property)
+	{
+		return;
+	}
+
+	// Fire value changed event for the initial value (transition from non-existent to existent)
+	float InitialValue = Property->GetValue();
+	OnPropertyValueChanged.Broadcast(PropertyTag, InitialValue, InitialValue);
 }
 

@@ -62,7 +62,7 @@ public:
 	 * @return The property's value, or the default value
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Dynamic Properties")
-	float GetPropertyValueOrDefault(FGameplayTag PropertyTag, float DefaultValue);
+	virtual float GetPropertyValueOrDefault(FGameplayTag PropertyTag, float DefaultValue);
 
 	/**
 	 * Gets all property tags in the container
@@ -70,6 +70,22 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Dynamic Properties")
 	void GetPropertiesKeys(TArray<FGameplayTag>& OutKeys);
+
+protected:
+	/**
+	 * Called when a new property is added - override in derived classes for custom behavior
+	 * @param PropertyTag The tag of the newly added property
+	 * @param Property The newly added property
+	 */
+	virtual void OnPropertyAddedInternal(FGameplayTag PropertyTag, UDynamicProperty* Property);
+
+	/**
+	 * Called when a property's value changes - override in derived classes for custom behavior
+	 * @param PropertyTag The tag of the property that changed
+	 * @param OldValue The previous value
+	 * @param NewValue The new value
+	 */
+	virtual void OnPropertyValueChangedInternal(FGameplayTag PropertyTag, float OldValue, float NewValue);
 
 private:
 	/**
