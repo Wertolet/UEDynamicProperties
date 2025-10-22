@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "DynamicProperties",
+	"Description": "",
+	"Category": "Other",
+	"CreatedBy": "Nikolai Bystrov",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "DynamicProperties",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

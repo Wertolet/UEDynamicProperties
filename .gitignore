@@ -1,0 +1,15 @@
+# Binaries
+Binaries/
+
+# Intermediate files
+Intermediate/
+
+# Cache files
+*.sln
+*.suo
+*.xcodeproj
+*.xcworkspace
+
+# Visual Studio
+.vs/
+
